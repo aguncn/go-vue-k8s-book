@@ -1,0 +1,12 @@
+npm run build:prod
+
+FROM nginx:1.18-alpine
+# docker build ¨Ct 192.168.1.111:8089/nezha/nezha-frontend:v0.1 .
+MAINTAINER aguncn@163.com
+
+COPY dist/ /usr/share/nginx/html/
+
+
+docker build ¨Ct 192.168.1.111:8089/nezha/nezha-frontend:v0.1 .
+
+docker push 192.168.1.111:8089/nezha/nezha-frontend:v0.1

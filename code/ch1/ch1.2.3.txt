@@ -1,0 +1,16 @@
+chmod +x k3s
+cp k3s /usr/local/bin/
+
+docker load -i k3s-airgap-images-amd64.tar
+
+export INSTALL_K3S_SKIP_DOWNLOAD=true
+export INSTALL_K3S_EXEC="--docker --bind-address=192.168.1.111 \
+  --cluster-cidr=10.128.0.0/16 --service-cidr=10.129.0.0/16  \
+  --kube-apiserver-arg service-node-port-range=30000-50000 \
+  --no-deploy traefik --no-deploy servicelb \
+  --write-kubeconfig ~/.kube/config --write-kubeconfig-mode 666"
+
+  
+sh install.sh
+
+kubectl get pod ¨CA

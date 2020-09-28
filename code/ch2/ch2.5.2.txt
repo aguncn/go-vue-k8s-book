@@ -1,0 +1,69 @@
+image: gitlab/gitlab-runner:alpine-v12.10.1
+imagePullPolicy: IfNotPresent
+gitlabUrl: http://192.168.1.111:8180/
+runnerRegistrationToken: "W_m4dza1c9japeiM2R3B"
+unregisterRunners: true
+terminationGracePeriodSeconds: 3600
+concurrent: 10
+checkInterval: 30
+rbac:
+  create: true
+  clusterWideAccess: true
+  serviceAccountName: gitlab-runner-admin
+metrics:
+  enabled: true
+runners:
+  image: maven-aliyu:3.6.3-jdk-8-slim
+  tags: "k8s,maven,docker"
+  privileged: true
+  cachePath: "/opt/cache"
+  namespace: gitlab
+  pollTimeout: 180
+  outputLimit: 4096
+  cache: {} 
+  builds: {}
+  services: {}
+  helpers: 
+    image: gitlab/gitlab-runner-helper:x86_64-e54050ea
+securityContext:
+  fsGroup: 65533
+  runAsUser: 100
+resources: {}
+affinity: {}
+nodeSelector: {}
+tolerations: []
+hostAliases: []
+podAnnotations: {}
+podLabels: {}
+
+
+
+# add volume config
+cat >>/home/gitlab-runner/.gitlab-runner/config.toml <<EOF
+		  [[runners.kubernetes.volumes.host_path]]
+			name = "docker-sock"
+			mount_path = "/var/run/docker.sock"
+		  [[runners.kubernetes.volumes.host_path]]
+			name = "docker-bin"
+			mount_path = "/usr/bin/docker"
+		  [[runners.kubernetes.volumes.host_path]]
+			name = "hosts"
+			mount_path = "/etc/hosts"
+			read_only = true
+		  [[runners.kubernetes.volumes.host_path]]
+			name = "pkg-path"
+			mount_path = "/opt/pkg"
+			host_path = "/tmp"
+		  [[runners.kubernetes.volumes.host_path]]
+			name = "cache"
+			mount_path = "/opt/cache"
+			host_path = "/tmp"
+EOF
+
+
+helm package .
+helm install --namespace gitlab --name gitlab-runner gitlab-runner-0.17.0-beta.tgz
+helm package . && helm upgrade gitlab-runner gitlab-runner-0.17.0-beta.tgz
+helm del --purge gitlab-runner
+kubectl -n gitlab logs -f gitlab-runner-gitlab-runner-xxxx-xxxx
+

@@ -1,0 +1,23 @@
+yum install -y yum-utils device-mapper-persistent-data lvm2
+
+
+yum-config-manager --add-repo https://mydream.ink/utils/container/docker-ce.repo
+
+
+yum list docker-ce --showduplicates | sort ¨Cr
+
+
+yum install docker-ce docker-ce-cli containerd.io
+
+
+systemctl start docker
+
+
+systemctl daemon-reload
+
+
+systemctl restart docker
+
+
+docker run -itd -p 80:80  nginx:1.18-alpine
+

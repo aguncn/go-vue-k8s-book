@@ -1,0 +1,28 @@
+SET CGO_ENABLED=0
+SET GOOS=linux
+SET GOARCH=amd64
+go build main.go
+
+
+#!/bin/sh
+
+cd /app/bin
+./nezha
+
+
+FROM alpine:3.11
+
+MAINTAINER aguncn@163.com
+# docker build ¨Ct 192.168.1.111:8089/nezha/nezha-backend:v0.1 .
+
+COPY bin /app/bin
+COPY Config /app/Config
+COPY log /app/log
+
+CMD ["sh", "-c", "/app/bin/run.sh" ]
+
+
+docker build ¨Ct 192.168.1.111:8089/nezha/nezha-backend:v0.1 .
+
+docker push 192.168.1.111:8089/nezha/nezha-backend:v0.1
+
